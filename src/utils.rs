@@ -6,7 +6,7 @@ pub type Context<'a> = poise::Context<'a, Data, Error>;
 
 pub async fn is_owner(ctx: Context<'_>) -> Result<bool, Error> {
     if ctx.author().id.get() != ctx.data().owner {
-        ctx.say("https://cdn.discordapp.com/attachments/1465548194065682474/1537852379658059796/ughh_i_love_sabi_somuchhhhh.gif").await?;
+        ctx.say("https://cdn.discordapp.com/attachments/1234467030011351052/1563281568989188238/gustwindy_roomba.gif").await?;
 
         return Ok(false);
     }

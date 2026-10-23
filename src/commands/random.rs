@@ -2,7 +2,7 @@ use poise::Command;
 
 use crate::utils::{Context, Data, Error, is_owner};
 
-#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
+#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     ctx.say("pong:3").await?;
 

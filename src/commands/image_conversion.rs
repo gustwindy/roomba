@@ -3,12 +3,12 @@ use poise::{Command, CreateReply, serenity_prelude::{Attachment, CreateAttachmen
 
 use crate::utils::{Context, Data, Error, is_owner};
 
-#[poise::command(slash_command, subcommands("lesbian"), install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
+#[poise::command(slash_command, subcommands("lesbian"), install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn image(_ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
-#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
+#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn lesbian(ctx: Context<'_>, user: Option<User>, file: Option<Attachment>) -> Result<(), Error> {
     let img: PhotonImage;
 

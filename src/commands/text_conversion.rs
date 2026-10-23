@@ -2,7 +2,7 @@ use poise::{Command, CreateReply};
 
 use crate::utils::{Context, Data, Error, is_owner};
 
-#[poise::command(slash_command, subcommands("serif", "monospace"), install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
+#[poise::command(slash_command, subcommands("serif", "monospace"), install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn text(_ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
@@ -27,7 +27,7 @@ fn convert_to(text: &str, to: &str) -> String {
     conv.iter().collect()
 }
 
-#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
+#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn serif(ctx: Context<'_>, content: String) -> Result<(), Error> {
     ctx.send(CreateReply::default()
         .ephemeral(true)
@@ -37,7 +37,7 @@ async fn serif(ctx: Context<'_>, content: String) -> Result<(), Error> {
     Ok(())
 }
 
-#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
+#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn monospace(ctx: Context<'_>, content: String) -> Result<(), Error> {
     ctx.send(CreateReply::default()
         .ephemeral(true)
