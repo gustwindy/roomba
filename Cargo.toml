@@ -5,5 +5,7 @@ edition = "2024"
 
 [dependencies]
 dotenvy = "0.15.7"
+photon-rs = "0.3.3"
 poise = "0.7.1"
+reqwest = "0.13.5"
 tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread"] }
