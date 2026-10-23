@@ -8,12 +8,14 @@ async fn ping(ctx: Context<'_>) -> Result<(), Error> {
 
     Ok(())
 }
+
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
 async fn say(ctx: Context<'_>, msg: String) -> Result<(), Error> {
     ctx.say(msg).await?;
 
     Ok(())
 }
+
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
 async fn send_self_reply(ctx: Context<'_>, content: String) -> Result<(), Error> {
     let msg = ctx.say("_ _").await?;
