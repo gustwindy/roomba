@@ -1,7 +1,7 @@
 use photon_rs::{PhotonImage, Rgba, multiple, native::{open_image, open_image_from_bytes}, transform::{SamplingFilter, padding_bottom, padding_left, padding_right, padding_top, resize}};
 use poise::{Command, CreateReply, serenity_prelude::{Attachment, CreateAttachment, User}};
 
-use crate::utils::{Context, Data, Error, is_owner};
+use crate::utils::{Context, Data, Error};
 
 #[poise::command(slash_command, subcommands("lesbian"), install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn image(_ctx: Context<'_>) -> Result<(), Error> {

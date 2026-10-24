@@ -1,6 +1,6 @@
 use poise::{Command, CreateReply};
 
-use crate::utils::{Context, Data, Error, is_owner};
+use crate::utils::{Context, Data, Error};
 
 #[poise::command(slash_command, subcommands("serif", "monospace"), install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn text(_ctx: Context<'_>) -> Result<(), Error> {
