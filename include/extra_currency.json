@@ -1,0 +1,14 @@
+{
+    "RBX": {
+        "from": [1.75, "PHP"],
+        "to": 1,
+        "symbol": "R$",
+        "full": "Robux"
+    },
+    "NITRO": {
+        "from": [525, "PHP"],
+        "to": 1,
+        "symbol": " Discord Nitros",
+        "full": "when gifted"
+    }
+}
