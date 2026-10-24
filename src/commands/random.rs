@@ -55,6 +55,7 @@ async fn say_antilog(ctx: Context<'_>, msg: String) -> Result<(), Error> {
 
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
 async fn currency(ctx: Context<'_>, amt: u32, from: Option<String>, to: Option<String>) -> Result<(), Error> {
+    println!();
 
     Ok(())
 }
