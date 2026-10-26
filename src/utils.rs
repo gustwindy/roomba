@@ -27,3 +27,18 @@ pub async fn is_owner(ctx: Context<'_>) -> Result<bool, Error> {
     }
     Ok(true)
 }
+
+pub async fn is_restock(ctx: Context<'_>) -> Result<bool, Error> {
+    let guild_id = ctx.guild_id();
+    if guild_id.is_none() {
+        ctx.say("only available in restock server").await?;
+
+        return Ok(false);
+    }
+    if ctx.guild_id().expect("we already checked").get() != 1410959974842236930 {
+        ctx.say("only available in restock server").await?;
+
+        return Ok(false);
+    }
+    Ok(true)
+}
