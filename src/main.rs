@@ -33,7 +33,7 @@ async fn event_handler(
             if message.author.id == bot_id {
                 return Ok(());
             }
-            if message.guild_id.is_none() || message.guild_id.unwrap().get() != 1410959974842236930 {
+            if message.guild_id.is_none() || (message.guild_id.unwrap().get() != 1410959974842236930 && message.guild_id.unwrap().get() != 1073897040515452928) {
                 return Ok(());
             }
             if message.content.to_ascii_lowercase().contains(&String::from("roomba")) || message.content.contains(&u64::to_string(&bot_id)) {
