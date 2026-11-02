@@ -27,3 +27,9 @@ pub async fn is_owner(ctx: Context<'_>) -> Result<bool, Error> {
     }
     Ok(true)
 }
+
+const DISCORD_START_DATE: u64 = 1_420_070_400_000;
+
+pub fn discord_id_to_timestamp(snowflake: &u64) -> u64 {
+    (snowflake >> 22) + DISCORD_START_DATE
+}

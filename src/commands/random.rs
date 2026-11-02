@@ -1,18 +1,19 @@
-use std::time;
-
 use poise::{Command, CreateReply};
-use tokio::time::Instant;
 
-use crate::utils::{Context, Data, Error, is_owner};
+
+use crate::utils::{Context, Data, Error, discord_id_to_timestamp, is_owner};
 
 /// Checks the ping of roomba to the server.
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn ping(ctx: Context<'_>) -> Result<(), Error> {
-
-    let now = Instant::now();
     let msg = ctx.say("pinging...").await?;
-    msg.edit(ctx, CreateReply::default().content(format!("pong :3 *({}ms)*", now.elapsed().as_millis()))).await?;
 
+    let actual = msg.to_owned().into_message().await?;
+
+    let start = discord_id_to_timestamp(&ctx.id());
+    let end = discord_id_to_timestamp(&actual.id.get());
+
+    msg.edit(ctx, CreateReply::default().content(format!("pong :3 *({}ms)*", end-start))).await?;
 
     Ok(())
 }
