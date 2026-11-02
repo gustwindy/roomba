@@ -11,6 +11,7 @@ async fn roomba(ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
+/// ask roomba something!
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn ask(ctx: Context<'_>, what: String) -> Result<(), Error> {
     let mut history: Vec<HistoryMessage> = vec![];

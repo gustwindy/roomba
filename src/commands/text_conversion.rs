@@ -27,6 +27,7 @@ fn convert_to(text: &str, to: &str) -> String {
     conv.iter().collect()
 }
 
+/// 𝖼𝗈𝗇𝗏𝖾𝗋𝗍𝗌 𝗒𝗈𝗎𝗋 𝗍𝖾𝗑𝗍 𝗍𝗈 𝗍𝗁𝗂𝗌 𝖿𝗈𝗇𝗍
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn serif(ctx: Context<'_>, content: String) -> Result<(), Error> {
     ctx.send(CreateReply::default()
@@ -37,6 +38,7 @@ async fn serif(ctx: Context<'_>, content: String) -> Result<(), Error> {
     Ok(())
 }
 
+/// 𝚌𝚘𝚗𝚟𝚎𝚛𝚝𝚜 𝚢𝚘𝚞𝚛 𝚝𝚎𝚡𝚝 𝚝𝚘 𝚝𝚑𝚒𝚜 𝚏𝚘𝚗𝚝
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn monospace(ctx: Context<'_>, content: String) -> Result<(), Error> {
     ctx.send(CreateReply::default()

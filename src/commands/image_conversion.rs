@@ -8,6 +8,7 @@ async fn image(_ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
+/// adds a lesbian ring around an image/someone's pfp
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn lesbian(ctx: Context<'_>, user: Option<User>, file: Option<Attachment>) -> Result<(), Error> {
     let img: PhotonImage;

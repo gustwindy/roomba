@@ -10,6 +10,7 @@ async fn i(ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
+/// [instance owner only]
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
 async fn say(ctx: Context<'_>, msg: String) -> Result<(), Error> {
     ctx.say(msg).await?;
@@ -17,6 +18,7 @@ async fn say(ctx: Context<'_>, msg: String) -> Result<(), Error> {
     Ok(())
 }
 
+/// [instance owner only]
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
 async fn send_self_reply(ctx: Context<'_>, content: String) -> Result<(), Error> {
     let msg = ctx.say("_ _").await?;
@@ -26,6 +28,7 @@ async fn send_self_reply(ctx: Context<'_>, content: String) -> Result<(), Error>
     Ok(())
 }
 
+/// [instance owner only]
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|PrivateChannel", check="is_owner")]
 async fn reply(ctx: Context<'_>, to_reply_to: String, content: String) -> Result<(), Error> {
     let channel = ctx.guild_channel().await;
@@ -39,6 +42,7 @@ async fn reply(ctx: Context<'_>, to_reply_to: String, content: String) -> Result
     Ok(())
 }
 
+/// [instance owner only]
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|PrivateChannel", check="is_owner")]
 async fn say_antilog(ctx: Context<'_>, msg: String) -> Result<(), Error> {
     let channel = ctx.guild_channel().await;

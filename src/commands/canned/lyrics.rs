@@ -5,6 +5,7 @@ pub async fn lyric(_ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
+/// god-ish
 #[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
 async fn do_you_know(ctx: Context<'_>) -> Result<(), Error> {
     ctx.say("[do you know?](https://youtu.be/EHBFKhLUVig?t=109)").await?;
