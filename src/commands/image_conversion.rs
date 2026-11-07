@@ -1,6 +1,5 @@
 use photon_rs::{PhotonImage, Rgba, effects, multiple, native::{open_image, open_image_from_bytes}, transform::{SamplingFilter, padding_bottom, padding_left, padding_right, padding_top, resize}};
 use poise::{Command, CreateReply, serenity_prelude::{Attachment, CreateAttachment, User}};
-use tokio_tungstenite::tungstenite::error;
 
 use crate::utils::{Context, Data, Error};
 
