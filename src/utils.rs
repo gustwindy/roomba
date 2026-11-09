@@ -1,8 +1,18 @@
 use std::collections::HashMap;
 
+pub struct Channels {
+    pub verify: u64
+}
+pub struct Roles {
+    pub verify: Vec<u64>
+}
+
 pub struct Data {
     pub owner: u64,
-    pub currencies: HashMap<String, CurrencyRate>
+    pub currencies: HashMap<String, CurrencyRate>,
+    pub channels: Channels,
+    pub roles: Roles,
+    pub server: u64
 }
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;

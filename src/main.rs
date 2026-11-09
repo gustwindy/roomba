@@ -6,13 +6,13 @@ use std::collections::HashMap;
 use std::{str::FromStr};
 use std::env;
 use iso_currency::Currency;
-use poise::serenity_prelude::{self as serenity, CacheHttp, CreateMessage, GetMessages};
+use poise::serenity_prelude::{self as serenity, CacheHttp, CreateMessage, GetMessages, GuildId};
 
 use utils::{Data};
 use serde::{Deserialize};
 
 use crate::roomba_gen::{AskReplyRequest, HistoryMessage};
-use crate::utils::{CurrencyRate, Error};
+use crate::utils::{Channels, CurrencyRate, Error, Roles};
 
 #[derive(Deserialize)]
 struct RawCurrencyRate {
@@ -83,7 +83,8 @@ async fn main() {
     let intents = serenity::GatewayIntents::all();
 
     let mut currencies: Option<HashMap<String, CurrencyRate>> = None;
-    let commands = commands::get();
+    let user_commands = commands::user::get();
+    let server_commands = commands::main_server::get();
 
     let resp = reqwest::get("https://api.frankfurter.dev/v2/rates?base=usd").await;
     if resp.is_ok() {
@@ -103,28 +104,35 @@ async fn main() {
                 to: f.rate
             })
         }).collect());
-
-        println!("Did");
+    } else {
+        println!("wasn't able to fetch currencies");
     }
 
 
     let data = Data {
         owner: u64::from_str(&env::var("OWNER").expect("so. there's no owner id (OWNER)")).expect("owner id not a number"),
-        currencies: currencies.unwrap_or(HashMap::new())
+        currencies: currencies.unwrap_or(HashMap::new()),
+        channels: Channels {
+            verify: u64::from_str(&env::var("VERIFY").expect("no verify")).expect("verify channel not an id"),
+        },
+        roles: Roles {
+            verify: (&env::var("ROLES").expect("no verify roles").split(",").map(|a| u64::from_str(a)).collect::<Result<Vec<u64>, _>>().expect("kms")).to_owned(),
+        },
+        server: u64::from_str(&env::var("HOST_SERVER").expect("so. there's no (HOST_SERVER)")).expect("HOST_SERVER error"),
     };
 
-    // one day ill be able to figure out whats going on down here
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
-            commands: commands,
+            commands: commands::get(),
             event_handler: |framework, event| Box::pin(event_handler(framework, event)),
             ..Default::default()
         })
-        .setup(|ctx, ready, framework| {
+        .setup(|ctx, ready, _framework| {
             println!("logged in as: {}", ready.user.name);
 
             Box::pin(async move {
-                poise::builtins::register_globally(ctx, &framework.options().commands).await?;
+                poise::builtins::register_globally(ctx, &user_commands).await?;
+                poise::builtins::register_in_guild(ctx, &server_commands, GuildId::new(data.server)).await?;
                 Ok(data)
             })
         })
