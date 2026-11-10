@@ -2,12 +2,9 @@ use std::collections::HashMap;
 
 use poise::serenity_prelude::futures::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
-use tokio_tungstenite::{
-    connect_async,
-    tungstenite::Message,
-};
 use serde_json::Value;
-use tokio::time::{timeout, Duration};
+use tokio::time::{Duration, timeout};
+use tokio_tungstenite::{connect_async, tungstenite::Message};
 
 #[derive(Deserialize, Serialize)]
 pub struct HistoryMessage {
@@ -29,15 +26,19 @@ struct Request {
     msg_type: String,
 }
 
-pub async fn send_to_roomba(uri: &str, ask_reply_req: AskReplyRequest) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
+pub async fn send_to_roomba(
+    uri: &str,
+    ask_reply_req: AskReplyRequest,
+) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
     let (mut ws, _) = connect_async(uri).await?;
 
     let request = Request {
         msg_type: String::from("ask_reply"),
-        content: ask_reply_req
+        content: ask_reply_req,
     };
 
-    ws.send(Message::text(serde_json::to_string(&request)?)).await?;
+    ws.send(Message::text(serde_json::to_string(&request)?))
+        .await?;
 
     let response = timeout(Duration::from_secs(2), async {
         while let Some(message) = ws.next().await {

@@ -1,9 +1,17 @@
+use poise::{
+    Command,
+    serenity_prelude::{CreateMessage, MessageId},
+};
 use std::str::FromStr;
-use poise::{Command, serenity_prelude::{CreateMessage, MessageId}};
 
 use crate::utils::{Context, Data, Error, is_owner};
 
-#[poise::command(slash_command, subcommands("say", "send_self_reply", "reply", "say_antilog"), install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel")]
+#[poise::command(
+    slash_command,
+    subcommands("say", "send_self_reply", "reply", "say_antilog"),
+    install_context = "User",
+    interaction_context = "Guild|BotDm|PrivateChannel"
+)]
 async fn i(ctx: Context<'_>) -> Result<(), Error> {
     ctx.say("pong:3").await?;
 
@@ -11,7 +19,12 @@ async fn i(ctx: Context<'_>) -> Result<(), Error> {
 }
 
 /// [instance owner only]
-#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
+#[poise::command(
+    slash_command,
+    install_context = "User",
+    interaction_context = "Guild|BotDm|PrivateChannel",
+    check = "is_owner"
+)]
 async fn say(ctx: Context<'_>, msg: String) -> Result<(), Error> {
     ctx.say(msg).await?;
 
@@ -19,7 +32,12 @@ async fn say(ctx: Context<'_>, msg: String) -> Result<(), Error> {
 }
 
 /// [instance owner only]
-#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|BotDm|PrivateChannel", check="is_owner")]
+#[poise::command(
+    slash_command,
+    install_context = "User",
+    interaction_context = "Guild|BotDm|PrivateChannel",
+    check = "is_owner"
+)]
 async fn send_self_reply(ctx: Context<'_>, content: String) -> Result<(), Error> {
     let msg = ctx.say("_ _").await?;
     msg.delete(ctx).await?;
@@ -29,7 +47,12 @@ async fn send_self_reply(ctx: Context<'_>, content: String) -> Result<(), Error>
 }
 
 /// [instance owner only]
-#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|PrivateChannel", check="is_owner")]
+#[poise::command(
+    slash_command,
+    install_context = "User",
+    interaction_context = "Guild|PrivateChannel",
+    check = "is_owner"
+)]
 async fn reply(ctx: Context<'_>, to_reply_to: String, content: String) -> Result<(), Error> {
     let channel = ctx.guild_channel().await;
     if channel.is_none() {
@@ -37,13 +60,23 @@ async fn reply(ctx: Context<'_>, to_reply_to: String, content: String) -> Result
 
         return Ok(());
     }
-    channel.unwrap().message(ctx.http(), MessageId::new(u64::from_str(&to_reply_to)?)).await?.reply_ping(ctx.http(), content).await?;
+    channel
+        .unwrap()
+        .message(ctx.http(), MessageId::new(u64::from_str(&to_reply_to)?))
+        .await?
+        .reply_ping(ctx.http(), content)
+        .await?;
 
     Ok(())
 }
 
 /// [instance owner only]
-#[poise::command(slash_command, install_context = "User", interaction_context = "Guild|PrivateChannel", check="is_owner")]
+#[poise::command(
+    slash_command,
+    install_context = "User",
+    interaction_context = "Guild|PrivateChannel",
+    check = "is_owner"
+)]
 async fn say_antilog(ctx: Context<'_>, msg: String) -> Result<(), Error> {
     let channel = ctx.guild_channel().await;
     if channel.is_none() {
@@ -51,13 +84,14 @@ async fn say_antilog(ctx: Context<'_>, msg: String) -> Result<(), Error> {
 
         return Ok(());
     }
-    channel.unwrap().send_message(ctx.http(), CreateMessage::default().content(msg)).await?;
+    channel
+        .unwrap()
+        .send_message(ctx.http(), CreateMessage::default().content(msg))
+        .await?;
 
     Ok(())
 }
 
 pub fn register() -> Vec<Command<Data, Error>> {
-    vec![
-        i()
-    ]
+    vec![i()]
 }

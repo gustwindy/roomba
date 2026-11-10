@@ -4,8 +4,7 @@ use crate::utils::{Data, Error};
 pub mod main_server;
 pub mod user;
 
-
-pub fn get() -> Vec<Command<Data, Error>>  {
+pub fn get() -> Vec<Command<Data, Error>> {
     let mut commands: Vec<Command<Data, Error>> = vec![];
 
     commands.extend(user::get());

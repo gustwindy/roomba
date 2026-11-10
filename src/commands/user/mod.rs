@@ -1,14 +1,14 @@
 use poise::Command;
 
 use crate::utils::{Data, Error};
-mod random;
-mod text_conversion;
-mod image_conversion;
 mod canned;
+mod image_conversion;
 mod owner;
+mod random;
 mod roomba;
+mod text_conversion;
 
-pub fn get() -> Vec<Command<Data, Error>>  {
+pub fn get() -> Vec<Command<Data, Error>> {
     let mut commands: Vec<Command<Data, Error>> = vec![];
 
     commands.extend(random::register());

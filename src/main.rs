@@ -1,77 +1,31 @@
-mod roomba_gen;
 mod commands;
+mod events;
+mod roomba_gen;
 mod utils;
 
+use poise::serenity_prelude::{self as serenity, GuildId};
 use std::collections::HashMap;
-use std::{str::FromStr};
 use std::env;
-use iso_currency::Currency;
-use poise::serenity_prelude::{self as serenity, CacheHttp, CreateMessage, GetMessages, GuildId};
 
-use utils::{Data};
-use serde::{Deserialize};
+use serde::Deserialize;
+use tokio::fs;
+use utils::Data;
 
-use crate::roomba_gen::{AskReplyRequest, HistoryMessage};
-use crate::utils::{Channels, CurrencyRate, Error, Roles};
+use crate::utils::config::Config;
+use crate::utils::{Error, currencies};
 
 #[derive(Deserialize)]
 struct RawCurrencyRate {
     quote: String,
-    rate: f32
+    rate: f32,
 }
 
 async fn event_handler(
     framework: poise::FrameworkContext<'_, Data, Error>,
     event: &serenity::FullEvent,
 ) -> Result<(), Error> {
-    let _data = framework.user_data;
-    let ctx = framework.serenity_context;
+    events::dispatch(framework, event).await?;
 
-    match event {
-        serenity::FullEvent::Message { new_message: message } => {
-            let bot_id = ctx.cache.current_user().id.get();
-            if message.author.id == bot_id {
-                return Ok(());
-            }
-
-            if message.guild_id.is_some() && (message.guild_id.unwrap().get() != 1410959974842236930 && message.guild_id.unwrap().get() != 1073897040515452928) {
-                return Ok(());
-            }
-
-            if message.content.to_ascii_lowercase().contains(&String::from("roomba")) || message.content.contains(&u64::to_string(&bot_id)) {
-                let channel = message.channel_id;
-                let mut messages = channel.messages(ctx.http(), GetMessages::new().limit(7).before(message.id.get()+1)).await?;
-                let mut history: Vec<HistoryMessage> = vec![];
-                let mut user_ids: HashMap<u64, String> = HashMap::new();
-
-                messages.reverse();
-
-                messages.iter().for_each(|msg| { // nobody told me there was a foreach in rust
-                    history.push( HistoryMessage {
-                        author_id: msg.author.id.get(),
-                        id: msg.id.get(),
-                        content: String::from(&msg.content)
-                    });
-
-                    user_ids.insert(msg.author.id.get(),String::from(msg.author.display_name()));
-                });
-
-                channel.broadcast_typing(ctx.http()).await?;
-
-                let resp = roomba_gen::send_to_roomba(&env::var("URI")?, AskReplyRequest {
-                    user_ids: user_ids,
-                    bot_id: bot_id,
-                    messages: history
-                }).await?;
-                let text = resp["content"].get("text");
-                if text.is_some() {
-                    let s = text.unwrap().as_str();
-                    channel.send_message(ctx.http(),CreateMessage::new().content(s.unwrap_or("-# roomba sent nothing back."))).await?;
-                }
-            }
-        }
-        _ => {}
-    }
     Ok(())
 }
 
@@ -79,46 +33,24 @@ async fn event_handler(
 async fn main() {
     dotenvy::dotenv().ok();
     let token: String = env::var("TOKEN").expect("so. there's no bot token (TOKEN)");
+    let preset: String = env::var("PRESET").expect("so. there's no config preset (PRESET)");
 
     let intents = serenity::GatewayIntents::all();
 
-    let mut currencies: Option<HashMap<String, CurrencyRate>> = None;
     let user_commands = commands::user::get();
     let server_commands = commands::main_server::get();
 
-    let resp = reqwest::get("https://api.frankfurter.dev/v2/rates?base=usd").await;
-    if resp.is_ok() {
-        let raw: Vec<RawCurrencyRate> = serde_json::from_str(&resp.unwrap().text().await.expect("failed to parse currencies ?! (1)")).expect("failed to parse currencies ?! (2)");
-
-        currencies = Some(raw.iter().map(|f| {
-            let data = Currency::from_code(&f.quote).unwrap_or(Currency::from_code("USD").expect("what the hell"));
-
-            (String::from(&f.quote), CurrencyRate {
-                short: String::from(&f.quote),
-
-                symbol: data.symbol().to_string(),
-                full: String::from(data.name()),
-
-                from_currency: String::from("USD"),
-                from_amt: 1.0,
-                to: f.rate
-            })
-        }).collect());
-    } else {
-        println!("wasn't able to fetch currencies");
-    }
-
-
+    let config: Config = serde_json::from_str(
+        &fs::read_to_string(format!("include/config/{}.json", preset))
+            .await
+            .expect("no preset config with that name"),
+    )
+    .expect("invalid config");
     let data = Data {
-        owner: u64::from_str(&env::var("OWNER").expect("so. there's no owner id (OWNER)")).expect("owner id not a number"),
-        currencies: currencies.unwrap_or(HashMap::new()),
-        channels: Channels {
-            verify: u64::from_str(&env::var("VERIFY").expect("no verify")).expect("verify channel not an id"),
-        },
-        roles: Roles {
-            verify: (&env::var("ROLES").expect("no verify roles").split(",").map(|a| u64::from_str(a)).collect::<Result<Vec<u64>, _>>().expect("kms")).to_owned(),
-        },
-        server: u64::from_str(&env::var("HOST_SERVER").expect("so. there's no (HOST_SERVER)")).expect("HOST_SERVER error"),
+        currencies: currencies::fetch_currencies()
+            .await
+            .unwrap_or(HashMap::new()),
+        config: config,
     };
 
     let framework = poise::Framework::builder()
@@ -132,7 +64,12 @@ async fn main() {
 
             Box::pin(async move {
                 poise::builtins::register_globally(ctx, &user_commands).await?;
-                poise::builtins::register_in_guild(ctx, &server_commands, GuildId::new(data.server)).await?;
+                poise::builtins::register_in_guild(
+                    ctx,
+                    &server_commands,
+                    GuildId::new(data.config.host_server.guild_id),
+                )
+                .await?;
                 Ok(data)
             })
         })

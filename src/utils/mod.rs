@@ -1,18 +1,10 @@
 use std::collections::HashMap;
-
-pub struct Channels {
-    pub verify: u64
-}
-pub struct Roles {
-    pub verify: Vec<u64>
-}
+pub mod config;
+pub mod currencies;
 
 pub struct Data {
-    pub owner: u64,
     pub currencies: HashMap<String, CurrencyRate>,
-    pub channels: Channels,
-    pub roles: Roles,
-    pub server: u64
+    pub config: config::Config,
 }
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;
@@ -28,9 +20,8 @@ pub struct CurrencyRate {
     pub to: f32,
 }
 
-
 pub async fn is_owner(ctx: Context<'_>) -> Result<bool, Error> {
-    if ctx.author().id.get() != ctx.data().owner {
+    if ctx.author().id.get() != ctx.data().config.owner {
         ctx.say("https://cdn.discordapp.com/attachments/1234467030011351052/1563281568989188238/gustwindy_roomba.gif").await?;
 
         return Ok(false);
