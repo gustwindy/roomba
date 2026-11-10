@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 pub mod config;
 pub mod currencies;
+pub mod images;
 
 pub struct Data {
     pub currencies: HashMap<String, CurrencyRate>,

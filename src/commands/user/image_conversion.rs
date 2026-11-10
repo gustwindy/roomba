@@ -1,14 +1,13 @@
-use photon_rs::{
-    PhotonImage, Rgba, effects, multiple,
-    native::{open_image, open_image_from_bytes},
-    transform::{SamplingFilter, padding_bottom, padding_left, padding_right, padding_top, resize},
-};
+use libvips::{VipsImage, ops};
 use poise::{
     Command, CreateReply,
     serenity_prelude::{Attachment, CreateAttachment, User},
 };
 
-use crate::utils::{Context, Data, Error};
+use crate::utils::{
+    Context, Data, Error,
+    images::{linear_without_the_fucking_alpha, mask_image, overlay},
+};
 
 #[poise::command(
     slash_command,
@@ -19,58 +18,42 @@ use crate::utils::{Context, Data, Error};
 async fn image(_ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
-fn mask_image(original: &PhotonImage, mask: &PhotonImage) -> PhotonImage {
-    let mut img = mask.clone();
 
-    multiple::blend(&mut img, &original, "atop");
+pub fn generate(flavor: &str, original: &VipsImage) -> Result<VipsImage, Error> {
+    let mut color = VipsImage::new_from_file(&format!("include/ring/{flavor}.png"))?;
 
-    return img;
-}
+    let mask_bg = VipsImage::new_from_file("include/ring/mask/bg.png")?;
+    let mask_dark = VipsImage::new_from_file("include/ring/mask/darkened.png")?;
+    let mask_inner = VipsImage::new_from_file("include/ring/mask/inner.png")?;
+    let mask_outer = VipsImage::new_from_file("include/ring/mask/outer.png")?;
 
-fn generate(
-    flavor: &str,
-    original: &PhotonImage,
-) -> Result<PhotonImage, Box<dyn std::error::Error>> {
-    // flavor wth // like foley
-    let mut color = open_image(format!("include/ring/{}.png", flavor))?;
-    let img = original.clone();
+    let width = mask_bg.get_width();
+    let height = mask_bg.get_height();
 
-    let mask_bg = open_image("include/ring/mask/bg.png")?;
-    let mask_dark = open_image("include/ring/mask/darkened.png")?;
-    let mask_inner = open_image("include/ring/mask/inner.png")?;
-    let mask_outer = open_image("include/ring/mask/outer.png")?;
+    // im gonna kill you
+    let resized = ops::resize_with_opts(
+        original,
+        ((width - 140) as f64 / original.get_width() as f64) as f64,
+        &ops::ResizeOptions {
+            vscale: ((height - 140) as f64 / original.get_height() as f64) as f64,
+            kernel: ops::Kernel::Cubic,
+            ..Default::default()
+        },
+    )?;
 
-    let resized = resize(
-        &img,
-        mask_bg.get_width() - 140,
-        mask_bg.get_height() - 140,
-        SamplingFilter::CatmullRom,
-    );
-    let padded = padding_bottom(
-        &padding_left(
-            &padding_right(
-                &padding_top(&resized, 70, Rgba::new(0, 0, 0, 0)),
-                70,
-                Rgba::new(0, 0, 0, 0),
-            ),
-            70,
-            Rgba::new(0, 0, 0, 0),
-        ),
-        70,
-        Rgba::new(0, 0, 0, 0),
-    );
+    let padded = ops::embed(&resized, 70, 70, width, height)?;
 
-    let mut cut_out = mask_image(&padded, &mask_inner);
-    let ring_outer = mask_image(&color, &mask_outer);
+    let mut cut_out = mask_image(&padded, &mask_inner)?;
+    let ring_outer = mask_image(&color, &mask_outer)?;
 
-    effects::adjust_brightness(&mut color, -50);
+    color = linear_without_the_fucking_alpha(&color, &mut [1.0], &mut [-50.0])?;
 
-    let ring_bg = mask_image(&color, &mask_bg);
-    let ring_dark = mask_image(&color, &mask_dark);
+    let ring_bg = mask_image(&color, &mask_bg)?;
+    let ring_dark = mask_image(&color, &mask_dark)?;
 
-    multiple::watermark(&mut cut_out, &ring_bg, 0, 0);
-    multiple::watermark(&mut cut_out, &ring_outer, 0, 0);
-    multiple::watermark(&mut cut_out, &ring_dark, 0, 0);
+    cut_out = overlay(&cut_out, &ring_bg)?;
+    cut_out = overlay(&cut_out, &ring_outer)?;
+    cut_out = overlay(&cut_out, &ring_dark)?;
 
     Ok(cut_out)
 }
@@ -81,32 +64,30 @@ async fn lazy_pfp(
     user: Option<User>,
     file: Option<Attachment>,
 ) -> Result<(), Error> {
-    let img: PhotonImage;
-
-    if user.is_some() {
-        img = open_image_from_bytes(
-            &reqwest::Client::new()
-                .get(user.expect("checked earlier").face())
-                .send()
-                .await?
-                .bytes()
-                .await?
-                .to_vec(),
-        )?;
-    } else if file.is_some() {
-        img = PhotonImage::new_from_byteslice(file.unwrap().download().await?);
+    // wow i made this even more unreadable
+    let input = if let Some(user) = user {
+        reqwest::get(user.face()).await?.bytes().await?.to_vec()
+    } else if let Some(file) = file {
+        file.download().await?
     } else {
         ctx.say("you did not specify a file or a user").await?;
-
         return Ok(());
-    }
+    };
 
     ctx.defer().await?;
-    let img = generate(flavor, &img).expect("frick you");
+
+    let flavor = flavor.to_owned();
+
+    let output = tokio::task::spawn_blocking(move || {
+        let img = VipsImage::new_from_buffer(&input, "")?;
+        let img = generate(&flavor, &img)?;
+
+        Ok::<Vec<u8>, Error>(img.image_write_to_buffer(".png")?)
+    })
+    .await??;
 
     ctx.send(
-        CreateReply::default()
-            .attachment(CreateAttachment::bytes(img.get_bytes(), "read_if_cute.png")),
+        CreateReply::default().attachment(CreateAttachment::bytes(output, "read_if_cute.png")),
     )
     .await?;
 

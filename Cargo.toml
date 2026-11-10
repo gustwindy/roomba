@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 dotenvy = "0.15.7"
 iso_currency = "0.7.1"
-photon-rs = "0.3.3"
+libvips = "2.3.0"
 poise = "0.7.1"
 reqwest = "0.13.5"
 serde = { version = "1.0.229", features = ["derive"] }

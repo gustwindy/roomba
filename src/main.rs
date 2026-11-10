@@ -3,6 +3,7 @@ mod events;
 mod roomba_gen;
 mod utils;
 
+use libvips::VipsApp;
 use poise::serenity_prelude::{self as serenity, GuildId};
 use std::collections::HashMap;
 use std::env;
@@ -53,6 +54,8 @@ async fn main() {
         config: config,
     };
 
+    let app = VipsApp::new("windy", false).expect("couldn't start libvips");
+
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
             commands: commands::get(),
@@ -80,4 +83,7 @@ async fn main() {
         .await;
 
     client.unwrap().start().await.unwrap();
+
+    // i lowk js put this to make warning shut up
+    println!("libvips version: {:}", app.version_string().unwrap_or("?"));
 }
