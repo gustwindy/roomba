@@ -1,0 +1,89 @@
+use poise::serenity_prelude::{
+    self, CacheHttp, ChannelId, Color, CreateEmbed, CreateMessage, Http, Mentionable, Message,
+    MessageReference, MessageReferenceKind, MessageType, ReactionType,
+};
+
+use crate::utils::{Data, Error, config::Config};
+
+async fn handle_message(http: &Http, config: &Config, message: &Message) -> Result<(), Error> {
+    if !config.host_server.join_logs.eq(&message.channel_id.get())
+        || !message.kind.eq(&MessageType::MemberJoin)
+        || message.reactions.iter().any(|r| r.me)
+    {
+        return Ok(());
+    };
+
+    let user = &message.author;
+    let welcome = ChannelId::from(config.host_server.welcome);
+
+    let embed = CreateEmbed::new()
+        .title("welcome to windy's warehouse!")
+        .description(format!(
+            "-# Account Creation: <t:{}:R>",
+            user.created_at().unix_timestamp()
+        ))
+        .image(
+            user.avatar_url()
+                .unwrap_or(String::from("https://example.com")),
+        )
+        .color(Color::from_rgb(182, 138, 249));
+
+    welcome
+        .send_message(
+            http,
+            CreateMessage::new()
+                .content(user.mention().to_string())
+                .embed(embed),
+        )
+        .await?;
+
+    message
+        .react(http, ReactionType::Unicode(String::from("✅")))
+        .await?;
+
+    let verify_msg = http
+        .get_message(
+            config.host_server.verify_channel.into(),
+            config.host_server.verify_msg.into(),
+        )
+        .await?;
+
+    user.dm(
+        http,
+        CreateMessage::new().reference_message(
+            MessageReference::new(MessageReferenceKind::Forward, verify_msg.channel_id)
+                .message_id(verify_msg.id),
+        ),
+    )
+    .await?;
+
+    Ok(())
+}
+
+pub async fn event(
+    framework: poise::FrameworkContext<'_, Data, Error>,
+    event: &serenity_prelude::FullEvent,
+) -> Result<(), Error> {
+    let ctx = framework.serenity_context;
+    let data = &framework.user_data.config;
+    match event {
+        serenity_prelude::FullEvent::Message {
+            new_message: message,
+        } => return handle_message(ctx.http(), data, message).await,
+
+        serenity_prelude::FullEvent::Ready {
+            data_about_bot: _ready,
+        } => {
+            let messages = ctx
+                .http
+                .get_messages(ChannelId::from(data.host_server.join_logs), None, Some(25))
+                .await?;
+
+            for msg in messages.iter() {
+                handle_message(ctx.http(), data, msg).await?;
+            }
+        }
+        _ => {}
+    }
+    Ok(())
+}
