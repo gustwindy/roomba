@@ -1,10 +1,10 @@
 use libvips::{VipsImage, ops};
 
 use crate::utils::Error;
-
+/*
 pub fn mask_image2(original: &VipsImage, mask: &VipsImage) -> Result<VipsImage, Error> {
     Ok(ops::composite2(mask, original, ops::BlendMode::Atop)?)
-}
+} */
 
 fn fix_bands(img: &VipsImage, img2: &VipsImage) -> Result<VipsImage, Error> {
     let missing = img2.get_bands() - img.get_bands();
