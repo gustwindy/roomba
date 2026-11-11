@@ -12,8 +12,22 @@ pub struct HostServer {
 }
 
 #[derive(Deserialize)]
+pub struct FindConfig {
+    pub limit: i32,
+    pub refetch_ratio: f32,
+    pub yuri_tags: Vec<String>,
+}
+
+#[derive(Deserialize)]
+pub struct CommandsConfig {
+    pub find: FindConfig,
+}
+
+#[derive(Deserialize)]
 pub struct Config {
     pub owner: u64,
-    pub host_server: HostServer,
     pub roomba_allowed_servers: Vec<u64>,
+
+    pub host_server: HostServer,
+    pub commands: CommandsConfig,
 }

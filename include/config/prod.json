@@ -1,5 +1,6 @@
 {
     "owner": 656132997422252042,
+    "roomba_allowed_servers": [1410959974842236930, 1073897040515452928],
 
     "host_server": {
         "guild_id": 1123870509474517083,
@@ -12,5 +13,12 @@
         "welcome": 1123870626168455188,
         "join_logs": 1531588950840311878
     },
-    "roomba_allowed_servers": [1410959974842236930, 1073897040515452928]
+
+    "commands": {
+        "find": {
+            "limit": 15,
+            "refetch_ratio": 0.5,
+            "yuri_tags": ["yuri", "height_difference", "sort:random"]
+        }
+    }
 }

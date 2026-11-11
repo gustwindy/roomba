@@ -1,4 +1,9 @@
 use std::collections::HashMap;
+
+use tokio::sync::Mutex;
+
+use crate::utils::booru::Listing;
+pub mod booru;
 pub mod config;
 pub mod currencies;
 pub mod images;
@@ -6,6 +11,8 @@ pub mod images;
 pub struct Data {
     pub currencies: HashMap<String, CurrencyRate>,
     pub config: config::Config,
+
+    pub stored_yuri: Mutex<Vec<Listing>>,
 }
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;

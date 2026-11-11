@@ -7,6 +7,7 @@ use libvips::VipsApp;
 use poise::serenity_prelude::{self as serenity, GuildId};
 use std::collections::HashMap;
 use std::env;
+use tokio::sync::Mutex;
 
 use serde::Deserialize;
 use tokio::fs;
@@ -52,6 +53,8 @@ async fn main() {
             .await
             .unwrap_or(HashMap::new()),
         config: config,
+
+        stored_yuri: Mutex::new(vec![]),
     };
 
     let app = VipsApp::new("windy", false).expect("couldn't start libvips");
