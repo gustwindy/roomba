@@ -18,10 +18,24 @@ use crate::utils::{
 async fn find(_: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
+/* frick your credit
+fn generate_credit_thing(source: String) -> Result<String, Error> {
+    let supported = RegexSet::new(&[
+        r"https?://(www\.)deviantart\.com/(\w+)/art",
+        r"https?://\w*(x|twitter)\.(com|org)/(\w+)/status",
+        r"https?://[[\w+.][^/]]+",
+    ])?;
+    let data = &[(1, "@!"), (2, "@! on twitter"), (0, "some guy on !")];
+
+}
+
+*/
 
 fn booru_embed(post: Listing, delay: u64) -> CreateReply {
     return CreateReply::new().embed(
         CreateEmbed::new()
+            .title("source")
+            .url(post.source)
             .image(post.file_url)
             .footer(CreateEmbedFooter::new(format!("{}ms", delay))),
     );

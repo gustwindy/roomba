@@ -2780,6 +2780,7 @@ dependencies = [
  "iso_currency",
  "libvips",
  "poise",
+ "regex",
  "reqwest 0.13.5",
  "serde",
  "serde_json",

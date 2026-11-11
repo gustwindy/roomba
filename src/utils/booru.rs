@@ -11,7 +11,6 @@ pub struct Listing {
     pub file_url: String,
     pub source: String,
     pub id: u32,
-    pub tags: String,
 }
 
 pub async fn get_random_images(tags: &Vec<String>, limit: &i32) -> Result<Vec<Listing>, Error> {
