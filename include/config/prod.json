@@ -16,7 +16,7 @@
 
     "commands": {
         "find": {
-            "limit": 15,
+            "limit": 30,
             "refetch_ratio": 0.5,
             "yuri_tags": ["yuri", "height_difference", "sort:random"]
         }

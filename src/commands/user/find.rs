@@ -48,7 +48,7 @@ fn booru_embed(post: Listing, delay: u64) -> CreateReply {
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
 async fn yuri(ctx: Context<'_>) -> Result<(), Error> {
-    let config = &ctx.data().config.commands.find; // ??????????????????????
+    let config = &ctx.data().config.commands.find;
 
     let mut all = ctx.data().stored_yuri.lock().await;
     let mut sent = false;
