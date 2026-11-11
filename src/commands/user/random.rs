@@ -1,6 +1,6 @@
 use poise::{Command, CreateReply};
 
-use crate::utils::{Context, Data, Error, discord_id_to_timestamp, is_owner};
+use crate::utils::{Context, Data, Error, discord_id_to_timestamp};
 
 /// Checks the ping of roomba to the server.
 #[poise::command(
@@ -24,7 +24,7 @@ async fn ping(ctx: Context<'_>) -> Result<(), Error> {
 
     Ok(())
 }
-
+/*
 /// (WIP) Converts a currency to another.
 #[poise::command(
     slash_command,
@@ -47,7 +47,7 @@ async fn currency(
     .await?;
 
     Ok(())
-}
+} */
 
 pub fn register() -> Vec<Command<Data, Error>> {
     vec![ping()]

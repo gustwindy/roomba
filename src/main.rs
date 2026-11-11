@@ -5,22 +5,20 @@ mod utils;
 
 use libvips::VipsApp;
 use poise::serenity_prelude::{self as serenity, GuildId};
-use std::collections::HashMap;
 use std::env;
 use tokio::sync::Mutex;
 
-use serde::Deserialize;
 use tokio::fs;
 use utils::Data;
 
+use crate::utils::Error;
 use crate::utils::config::Config;
-use crate::utils::{Error, currencies};
-
+/*
 #[derive(Deserialize)]
 struct RawCurrencyRate {
     quote: String,
     rate: f32,
-}
+} */
 
 async fn event_handler(
     framework: poise::FrameworkContext<'_, Data, Error>,
@@ -49,9 +47,9 @@ async fn main() {
     )
     .expect("invalid config");
     let data = Data {
-        currencies: currencies::fetch_currencies()
-            .await
-            .unwrap_or(HashMap::new()),
+        /*currencies: currencies::fetch_currencies()
+        .await
+        .unwrap_or(HashMap::new()),*/
         config: config,
 
         stored_yuri: Mutex::new(vec![]),

@@ -10,7 +10,6 @@ fn uri(part: &str) -> String {
 pub struct Listing {
     pub file_url: String,
     pub source: String,
-    pub id: u32,
 }
 
 pub async fn get_random_images(tags: &Vec<String>, limit: &i32) -> Result<Vec<Listing>, Error> {
