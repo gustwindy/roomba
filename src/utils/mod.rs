@@ -1,4 +1,7 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    time::{Duration, SystemTime},
+};
 
 use tokio::sync::Mutex;
 
@@ -26,6 +29,14 @@ pub struct CurrencyRate {
     pub from_currency: String,
     pub from_amt: f32,
     pub to: f32,
+}
+
+pub fn time(id: &u64) -> u64 {
+    let now = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap_or(Duration::from_millis(0));
+
+    return (now.as_millis() as u64) - discord_id_to_timestamp(&id);
 }
 
 pub async fn is_owner(ctx: Context<'_>) -> Result<bool, Error> {

@@ -6,6 +6,7 @@ use poise::{
 use crate::utils::{
     Context, Data, Error,
     booru::{Listing, get_random_images},
+    time,
 };
 
 #[poise::command(
@@ -18,11 +19,11 @@ async fn find(_: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
-fn booru_embed(post: Listing) -> CreateReply {
+fn booru_embed(post: Listing, delay: u64) -> CreateReply {
     return CreateReply::new().embed(
         CreateEmbed::new()
             .image(post.file_url)
-            .footer(CreateEmbedFooter::new(post.tags)),
+            .footer(CreateEmbedFooter::new(format!("{}ms", delay))),
     );
 }
 
@@ -40,7 +41,8 @@ async fn yuri(ctx: Context<'_>) -> Result<(), Error> {
 
     if all.len() > 1 {
         sent = true;
-        ctx.send(booru_embed(all.pop().expect("theres 2"))).await?;
+        ctx.send(booru_embed(all.pop().expect("there's 2"), time(&ctx.id())))
+            .await?;
     }
 
     if (all.len() as f32) < ((config.limit as f32) * config.refetch_ratio) {
@@ -50,8 +52,11 @@ async fn yuri(ctx: Context<'_>) -> Result<(), Error> {
     }
 
     if all.len() > 1 && !sent {
-        ctx.send(booru_embed(all.pop().expect("we populated it")))
-            .await?;
+        ctx.send(booru_embed(
+            all.pop().expect("we populated it"),
+            time(&ctx.id()),
+        ))
+        .await?;
     }
 
     Ok(())
