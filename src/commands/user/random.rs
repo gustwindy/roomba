@@ -24,6 +24,7 @@ async fn ping(ctx: Context<'_>) -> Result<(), Error> {
 
     Ok(())
 }
+
 /*
 /// (WIP) Converts a currency to another.
 #[poise::command(
