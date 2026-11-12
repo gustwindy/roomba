@@ -11,6 +11,7 @@
 - `/i` are instance owner only
 - `/image` for image conversions
 - `/text` for text conversions
+- `/find` for random images (like `/find yuri`)
 - there is an (dumb) LLM you can talk to, via `/roomba ask`. (source `roomba_gen.rs`, though the actual model is closed source)
 - a lot more random things
 
