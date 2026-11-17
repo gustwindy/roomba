@@ -5,6 +5,7 @@ use crate::utils::{Context, Data, Error, discord_id_to_timestamp};
 /// Checks the ping of roomba to the server.
 #[poise::command(
     slash_command,
+    prefix_command,
     install_context = "User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]

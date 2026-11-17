@@ -11,6 +11,7 @@ use crate::utils::{
 
 #[poise::command(
     slash_command,
+    prefix_command,
     subcommands("yuri"),
     install_context = "User",
     interaction_context = "Guild|BotDm|PrivateChannel"
@@ -44,6 +45,7 @@ fn booru_embed(post: Listing, delay: u64) -> CreateReply {
 /// Finds you yuri.
 #[poise::command(
     slash_command,
+    prefix_command,
     install_context = "User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]

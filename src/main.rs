@@ -59,6 +59,11 @@ async fn main() {
 
     let framework = poise::Framework::builder()
         .options(poise::FrameworkOptions {
+            prefix_options: poise::PrefixFrameworkOptions {
+                prefix: Some("r!".into()),
+                case_insensitive_commands: true,
+                ..Default::default()
+            },
             commands: commands::get(),
             event_handler: |framework, event| Box::pin(event_handler(framework, event)),
             ..Default::default()

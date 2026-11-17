@@ -53,7 +53,7 @@ async fn get_user_data(ctx: Context<'_>, user: User) -> Result<(), Error> {
     Ok(())
 }
 
-/// Shows everything about a any discord ID that is possible.
+/// Shows everything about a any discord ID that is possible. (basically just the timestamp)
 #[poise::command(
     slash_command,
     install_context = "User",

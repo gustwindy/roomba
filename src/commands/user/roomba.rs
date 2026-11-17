@@ -9,6 +9,7 @@ use crate::{
 
 #[poise::command(
     slash_command,
+    prefix_command,
     subcommands("ask"),
     install_context = "User",
     interaction_context = "Guild|BotDm|PrivateChannel"

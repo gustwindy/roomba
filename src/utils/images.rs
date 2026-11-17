@@ -6,7 +6,7 @@ fn fix_bands(img: &VipsImage, amount: i32, fill: f64) -> Result<VipsImage, Error
     let bands = img.get_bands();
 
     if bands == amount {
-        return Ok(img.clone());
+        return Ok(ops::copy(&img)?);
     }
 
     if bands > amount {

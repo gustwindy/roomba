@@ -11,6 +11,7 @@ use crate::utils::{
 
 #[poise::command(
     slash_command,
+    prefix_command,
     subcommands("lesbian", "gay", "straight", "bi"),
     install_context = "User",
     interaction_context = "Guild|BotDm|PrivateChannel"
@@ -97,6 +98,7 @@ async fn lazy_pfp(
 /// adds a lesbian ring around an image/someone's pfp
 #[poise::command(
     slash_command,
+    prefix_command,
     install_context = "User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
@@ -112,6 +114,7 @@ async fn lesbian(
 /// adds a gay (mlm) ring around an image/someone's pfp
 #[poise::command(
     slash_command,
+    prefix_command,
     install_context = "User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
@@ -123,6 +126,7 @@ async fn gay(ctx: Context<'_>, user: Option<User>, file: Option<Attachment>) -> 
 /// adds a straight flag ring around an image/someone's pfp
 #[poise::command(
     slash_command,
+    prefix_command,
     install_context = "User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
@@ -138,6 +142,7 @@ async fn straight(
 /// adds a bi ring around an image/someone's pfp
 #[poise::command(
     slash_command,
+    prefix_command,
     install_context = "User",
     interaction_context = "Guild|BotDm|PrivateChannel"
 )]
